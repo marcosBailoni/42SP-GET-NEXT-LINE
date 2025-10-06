@@ -3,61 +3,52 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maralves <maralves@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vboxuser <vboxuser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 12:54:48 by maralves          #+#    #+#             */
-/*   Updated: 2025/10/02 14:30:56 by maralves         ###   ########.fr       */
+/*   Updated: 2025/10/05 21:31:15 by vboxuser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "stddef.h"
 #include "get_next_line.h"
-
+#include <unistd.h>
+#include <stddef.h>
 
 char *get_next_line(int fd)
 {
+	static int BUFFER_SIZE;
 	char *buffer;
-	int bytes_read;
-	int count;
-	int i;
-	static int read_stop;
-
-	buffer = malloc(sizeof(char) * 42);
+	char *final_str;
+	int	i;
+	int count_chars_read;
+	ssize_t read_size;
+	
+	buffer = malloc(sizeof(char) * BUFFER_SIZE);
+	read_size = read (fd, buffer, BUFFER_SIZE);
 	if (!buffer)
 		return (NULL);
-	bytes_read = 1;
-	while (bytes_read > 0)
+	i = 0;
+	count_chars_read = 0;
+	while (read_size > 0)
 	{
-		bytes_read = read(fd, buffer, 42);
-		if (bytes_read < 1)
-			break;
-		count = 0;
-		while (buffer[count] != '\n' || buffer[count] != '\0' && count < 42)
-			count++;
-		read_stop += count;
-		if (buffer[count] == '\n')
+		if (read_size < BUFFER_SIZE)
+			BUFFER_SIZE = read_size;
+		while (i < BUFFER_SIZE)
 		{
-			i = 0;
-			while (i <= count)
+			count_chars_read += i;
+			if (buffer[i] == '\n' || buffer[i] == '\0')
 			{
-				write (1, &buffer[i], 1);
-				i++;
+				final_str = malloc (sizeof(char) * (count_chars_read + 1));
+				return (ft_buffer_concat(final_str, buffer, count_chars_read + 1));	
+			} else 
+			{
+				final_str = ft_buffer_concat(final_str, buffer, count_chars_read + 1);
+				i = 0;
 			}
+			i++;
 		}
-		else if (count == 42)
-		{
-			ft_putstr(buffer);
-			ft_bzero(buffer);
-			continue; 
-		}
-		else
-		{
-			free(buffer);
-			return (NULL);
-		}
-					
+		read_size = read (fd, buffer, BUFFER_SIZE);
 	}
-	
 }
 
 // O L A \n
