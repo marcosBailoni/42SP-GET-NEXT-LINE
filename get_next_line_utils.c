@@ -11,6 +11,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdlib.h>
 #include <stddef.h>
 
 int	ft_strlen (char *str)
@@ -28,11 +29,9 @@ char	*char_pointer_initializer(char *str)
 	if (!str)
 	{
 		str = malloc(1);
-		if (!str)
-			return (NULL);
-		str[0] = '\0';
-		return (str);
+		str[0] = '\0';		
 	}
+	return (str);
 }
 
 char *ft_buffer_concat(char *final_str, char *buffer, int buffer_size)
@@ -40,10 +39,10 @@ char *ft_buffer_concat(char *final_str, char *buffer, int buffer_size)
 	char *new_str;
 	int i;
 	int size;
-
+	if (!final_str || !buffer)
+		return (NULL);
 	i = 0;
-	if (!final_str)
-		char_pointer_initializer(final_str);
+	final_str = char_pointer_initializer(final_str);
 	size = ft_strlen(final_str) + buffer_size + 1;
 	new_str = malloc(size);
 	while (final_str[i])

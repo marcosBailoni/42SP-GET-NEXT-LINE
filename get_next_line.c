@@ -6,49 +6,61 @@
 /*   By: vboxuser <vboxuser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 12:54:48 by maralves          #+#    #+#             */
-/*   Updated: 2025/10/05 21:31:15 by vboxuser         ###   ########.fr       */
+/*   Updated: 2025/10/09 19:01:34 by vboxuser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 #include <unistd.h>
 #include <stddef.h>
+#include <stdlib.h>
+
 
 char *get_next_line(int fd)
 {
-	static int BUFFER_SIZE;
 	char *buffer;
 	char *final_str;
 	int	i;
 	int count_chars_read;
 	ssize_t read_size;
-	
-	buffer = malloc(sizeof(char) * BUFFER_SIZE);
-	read_size = read (fd, buffer, BUFFER_SIZE);
+	ssize_t buffer_size = BUFFER_SIZE;
+
+	final_str = NULL;
+
+	buffer = malloc(sizeof(char) * buffer_size);
 	if (!buffer)
 		return (NULL);
+	read_size = read (fd, buffer, buffer_size);
+	if (!buffer)
+	{
+		free(buffer);
+		buffer = NULL;
+	}
+	// buffer[buffer_size] = '\0';
+
 	i = 0;
 	count_chars_read = 0;
 	while (read_size > 0)
 	{
-		if (read_size < BUFFER_SIZE)
-			BUFFER_SIZE = read_size;
-		while (i < BUFFER_SIZE)
+		if (read_size < buffer_size)
+			buffer_size = read_size;
+		while (i < buffer_size)
 		{
-			count_chars_read += i;
+			
 			if (buffer[i] == '\n' || buffer[i] == '\0')
-			{
-				final_str = malloc (sizeof(char) * (count_chars_read + 1));
-				return (ft_buffer_concat(final_str, buffer, count_chars_read + 1));	
-			} else 
+				return (ft_buffer_concat(final_str, buffer, count_chars_read + 1));
+			else
 			{
 				final_str = ft_buffer_concat(final_str, buffer, count_chars_read + 1);
-				i = 0;
 			}
 			i++;
+			count_chars_read++;
 		}
-		read_size = read (fd, buffer, BUFFER_SIZE);
+		read_size = read (fd, buffer, buffer_size);
+		// buffer[buffer_size] = '\0';
+		i = 0;
 	}
+	return (final_str);
 }
 
 // O L A \n
