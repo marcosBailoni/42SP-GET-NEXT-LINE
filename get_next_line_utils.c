@@ -11,52 +11,114 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h>
-#include <stddef.h>
 
-int	ft_strlen (char *str)
+#include "get_next_line.h"
+
+size_t	ft_strlen(const char *str)
 {
-	int i;
+	size_t	i;
 
+	if (!str)
+		return (0);
 	i = 0;
 	while (str[i])
 		i++;
 	return (i);
 }
 
-char	*char_pointer_initializer(char *str)
+char	*ft_strdup(const char *s)
 {
-	if (!str)
-	{
-		str = malloc(1);
-		str[0] = '\0';		
-	}
-	return (str);
-}
+	char	*temp_s;
+	char	*new_str;
+	int		i;
 
-char *ft_buffer_concat(char *final_str, char *buffer, int buffer_size)
-{
-	char *new_str;
-	int i;
-	int size;
-	if (!final_str || !buffer)
+	i = 0;
+	temp_s = (char *)s;
+	while (s[i])
+	{
+		i++;
+	}
+	new_str = malloc(sizeof(char) * (i + 1));
+	if (!new_str)
 		return (NULL);
 	i = 0;
-	final_str = char_pointer_initializer(final_str);
-	size = ft_strlen(final_str) + buffer_size + 1;
-	new_str = malloc(size);
-	while (final_str[i])
+	while (temp_s[i])
 	{
-		new_str[i] = final_str[i];
+		new_str[i] = temp_s[i];
 		i++;
-	}
-	while (i < size - 1)
-	{
-		new_str[i] = *buffer;
-		i++;
-		buffer++;
 	}
 	new_str[i] = '\0';
-	free(final_str);
 	return (new_str);
 }
+char	*ft_strjoin(char *s1, char *s2)
+{
+	char	*new;
+	int		count1;
+	int		count2;
+
+	if (!s1)
+		s1 = ft_strdup("");
+	if (!s2)
+		return (NULL);
+	new = malloc(sizeof(char)
+			* (ft_strlen(s1) + ft_strlen(s2) + 1));
+	if (!new)
+		return (NULL);
+	count1 = 0;
+	count2 = 0;
+	while (s1[count1])
+	{
+		new[count1] = s1[count1];
+		count1++;
+	}
+	while (s2[count2])
+	{
+		new[count1] = s2[count2];
+		count1++;
+		count2++;
+	}
+	new[count1] = '\0';
+	free (s1);
+	return (new);
+}
+
+size_t	ft_strlcpy(char *dst, const char *src, size_t size)
+{
+	size_t	i;
+
+	i = 0;
+	if (size == 0)
+		return (ft_strlen(src));
+	while (i < size - 1 && src[i])
+	{
+		dst[i] = (char)src[i];
+		i++;
+	}
+	dst[i] = '\0';
+	return (ft_strlen(src));
+}
+
+char	*ft_substr(char const *s, unsigned int start, size_t len)
+{
+	char	*new;
+	size_t	chars_to_copy;
+	size_t	s_len;
+
+	if (!s)
+		return (0);
+	chars_to_copy = 0;
+	s_len = ft_strlen((char *)s);
+	if (start < s_len)
+		chars_to_copy = s_len - start;
+	if (chars_to_copy > len)
+		chars_to_copy = len;
+	new = malloc(sizeof(char) * (chars_to_copy + 1));
+	if (!new)
+		return (0);
+	if (chars_to_copy == 0)
+		new[0] = '\0';
+	else
+		ft_strlcpy(new, s + start, chars_to_copy + 1);
+	return (new);
+}
+

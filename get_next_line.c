@@ -6,70 +6,104 @@
 /*   By: vboxuser <vboxuser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 12:54:48 by maralves          #+#    #+#             */
-/*   Updated: 2025/10/09 19:01:34 by vboxuser         ###   ########.fr       */
+/*   Updated: 2025/10/15 00:37:35 by vboxuser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 #include <unistd.h>
-#include <stddef.h>
-#include <stdlib.h>
 
+char	*ft_start_gnl(int fd)
+{
+	char *buffer;
+	
+	if ((read(fd, 0, 0) == -1 || BUFFER_SIZE < 1))
+		return (NULL);
+	buffer = malloc (sizeof(char) * (BUFFER_SIZE + 1));
+	if (!buffer)
+		return (NULL);
+	return (buffer);	
+}
+
+char *extract_line(char *stash, int i)
+{
+	char *new;
+	
+	new = malloc (sizeof(char) * (i + 2));
+	if (!new)
+		return (NULL);
+	ft_strlcpy(new, stash, i + 2);
+	return (new);
+}
+char *remake_stash(char *stash, int i)
+{
+	char *new_stash;
+	
+	new_stash = ft_substr(stash, i + 1, ft_strlen(stash) - i + 1);
+	free (stash);
+	return (new_stash);
+}
 
 char *get_next_line(int fd)
 {
 	char *buffer;
-	char *final_str;
-	int	i;
-	int count_chars_read;
-	ssize_t read_size;
-	ssize_t buffer_size = BUFFER_SIZE;
-
-	final_str = NULL;
-
-	buffer = malloc(sizeof(char) * buffer_size);
+	static char *stash;	
+	int bytes_read;
+	int i;
+	char *temp;
+	
+	temp = NULL;
+	i = 0;
+	bytes_read = 1;
+	buffer = ft_start_gnl(fd);
 	if (!buffer)
 		return (NULL);
-	read_size = read (fd, buffer, buffer_size);
-	if (!buffer)
+	while ((bytes_read = read(fd, buffer, BUFFER_SIZE)) > 0)
 	{
-		free(buffer);
-		buffer = NULL;
-	}
-	// buffer[buffer_size] = '\0';
-
-	i = 0;
-	count_chars_read = 0;
-	while (read_size > 0)
-	{
-		if (read_size < buffer_size)
-			buffer_size = read_size;
-		while (i < buffer_size)
+		buffer[bytes_read] = '\0';
+		stash = ft_strjoin(stash, buffer);
+		if (!stash)
 		{
-			
-			if (buffer[i] == '\n' || buffer[i] == '\0')
-				return (ft_buffer_concat(final_str, buffer, count_chars_read + 1));
-			else
-			{
-				final_str = ft_buffer_concat(final_str, buffer, count_chars_read + 1);
-			}
-			i++;
-			count_chars_read++;
+			free (buffer);
+			return (NULL);
 		}
-		read_size = read (fd, buffer, buffer_size);
-		// buffer[buffer_size] = '\0';
 		i = 0;
+		while (stash[i] != '\n' && stash[i])
+			i++;		
+		if (stash[i] == '\n')
+		{
+			temp = extract_line (stash, i);
+			stash = remake_stash(stash, i);
+			if (!temp || !stash)
+			{
+				free (temp);
+				free (buffer);
+				free (stash);
+				return (NULL);
+			}
+			free (buffer);
+			return (temp);
+		}
 	}
-	return (final_str);
+    if (bytes_read == -1)
+    {
+        free(buffer); 
+        if (stash)
+        {
+            free(stash);
+            stash = NULL;
+        }
+        return (NULL);
+    }
+		
+	if (stash && *stash)
+	{
+			temp = ft_strjoin(NULL, stash);
+			free (buffer);
+			free (stash);
+			stash = NULL;
+			return (temp);
+	}
+	free(buffer);
+    return (NULL);
 }
-
-// O L A \n
-// ler x bytes
-// ver se nesses x bytes tem \n
-// se tiver, escrever até o \n, 
-// o restante lido, ver se tem \n de novo
-// se tiver, escrever até o \n novamente e guardar o que sobrou
-// fazer isso até o restante não ter \n
-// Caso não tenha, escrever, resetar o buffer e fazer o read novamente.
-
-// Não esquecer dos malloc e free;
