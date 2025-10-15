@@ -6,7 +6,7 @@
 /*   By: vboxuser <vboxuser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 12:54:48 by maralves          #+#    #+#             */
-/*   Updated: 2025/10/15 00:37:35 by vboxuser         ###   ########.fr       */
+/*   Updated: 2025/10/15 12:27:27 by vboxuser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,11 +35,12 @@ char *extract_line(char *stash, int i)
 	ft_strlcpy(new, stash, i + 2);
 	return (new);
 }
+// "\n\0"  
 char *remake_stash(char *stash, int i)
 {
 	char *new_stash;
 	
-	new_stash = ft_substr(stash, i + 1, ft_strlen(stash) - i + 1);
+	new_stash = ft_substr(stash, i + 1, ft_strlen(stash) - (i + 1));
 	free (stash);
 	return (new_stash);
 }
@@ -58,6 +59,29 @@ char *get_next_line(int fd)
 	buffer = ft_start_gnl(fd);
 	if (!buffer)
 		return (NULL);
+	if (stash)
+    {
+        while (stash[i] != '\n' && stash[i])
+			i++;		
+		if (stash[i] == '\n')
+		{
+			temp = extract_line (stash, i);
+			stash = remake_stash(stash, i);
+			if (!temp || !stash)
+			{
+				if (temp)
+					free (temp);
+				if (buffer)
+					free (buffer);
+				if (stash)
+					free (stash);
+				return (NULL);
+			}
+			if (buffer)
+				free (buffer);
+			return (temp);
+		}
+    }
 	while ((bytes_read = read(fd, buffer, BUFFER_SIZE)) > 0)
 	{
 		buffer[bytes_read] = '\0';
@@ -94,8 +118,7 @@ char *get_next_line(int fd)
             stash = NULL;
         }
         return (NULL);
-    }
-		
+    }		
 	if (stash && *stash)
 	{
 			temp = ft_strjoin(NULL, stash);
@@ -104,6 +127,7 @@ char *get_next_line(int fd)
 			stash = NULL;
 			return (temp);
 	}
+	
 	free(buffer);
     return (NULL);
 }
