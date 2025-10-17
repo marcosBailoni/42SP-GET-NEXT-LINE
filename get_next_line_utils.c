@@ -11,115 +11,134 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #include "get_next_line.h"
 
 size_t	ft_strlen(const char *str)
 {
 	size_t	i;
 
-	if (!str)
-		return (0);
 	i = 0;
-	while (str[i])
-		i++;
+	if (str)
+	{
+		while (str[i])
+			i++;
+	}
 	return (i);
 }
 
-char	*ft_strdup(const char *s)
+char	*ft_strchr(char *stash, char c)
 {
-	char	*temp_s;
-	char	*new_str;
-	int		i;
+	int	i;
 
-	i = 0;
-	temp_s = (char *)s;
-	while (s[i])
-	{
-		i++;
-	}
-	new_str = malloc(sizeof(char) * (i + 1));
-	if (!new_str)
+	if (!stash)
 		return (NULL);
 	i = 0;
-	while (temp_s[i])
+	while (stash[i] != '\0')
 	{
-		new_str[i] = temp_s[i];
+		if (stash[i] == c)
+			return (stash + i);
 		i++;
 	}
-	new_str[i] = '\0';
-	return (new_str);
+	return (NULL);
 }
-char	*ft_strjoin(char *s1, char *s2)
-{
-	char	*new;
-	int		count1;
-	int		count2;
 
-	if (!s1)
-		s1 = ft_strdup("");
-	if (!s2)
-		return (NULL);
-	new = malloc(sizeof(char)
-			* (ft_strlen(s1) + ft_strlen(s2) + 1));
+char	*ft_join_stash_buffer(char *stash, char *buffer)
+{
+	char *new;
+	int i;
+	int j;
+
+	i = 0;
+	j = 0;
+	if (!stash)
+	{
+		stash = (malloc(1));
+		stash[0] = '\0';
+	}
+	new = malloc (sizeof(char) * (ft_strlen(stash) + ft_strlen(buffer) + 1));
 	if (!new)
 		return (NULL);
-	count1 = 0;
-	count2 = 0;
-	while (s1[count1])
+		// talvez tenha que free no stash também. e fazer a validacao do null
+	while (stash[i])
 	{
-		new[count1] = s1[count1];
-		count1++;
-	}
-	while (s2[count2])
-	{
-		new[count1] = s2[count2];
-		count1++;
-		count2++;
-	}
-	new[count1] = '\0';
-	if (s1)
-		free (s1);
-	return (new);
-}
-
-size_t	ft_strlcpy(char *dst, const char *src, size_t size)
-{
-	size_t	i;
-
-	i = 0;
-	if (size == 0)
-		return (ft_strlen(src));
-	while (i < size - 1 && src[i])
-	{
-		dst[i] = (char)src[i];
+		new[i] = stash[i];
 		i++;
 	}
-	dst[i] = '\0';
-	return (ft_strlen(src));
-}
-
-char	*ft_substr(char const *s, unsigned int start, size_t len)
-{
-	char	*new;
-	size_t	chars_to_copy;
-	size_t	s_len;
-
-	if (!s)
-		return (0);
-	chars_to_copy = 0;
-	s_len = ft_strlen((char *)s);
-	if (start < s_len)
-		chars_to_copy = s_len - start;
-	if (chars_to_copy > len)
-		chars_to_copy = len;
-	new = malloc(sizeof(char) * (chars_to_copy + 1));
-	if (!new)
-		return (0);
-	if (chars_to_copy == 0)
-		new[0] = '\0';
-	else
-		ft_strlcpy(new, s + start, chars_to_copy + 1);
+	while (buffer[j])
+		new[i++] = buffer[j++];
+	new[i] = '\0';
+	free (stash);
 	return (new);
 }
+char	*readjust_stash(char *stash)
+{
+	char *new_stash;
+	int index;
+	int j;
 
+	if (!stash)
+        return NULL;
+	if (!ft_strchr(stash, '\n'))
+	{
+		free(stash);
+		return (NULL);
+	}
+	index = find_char_str(stash, '\n');
+	j = 0;
+	new_stash = malloc(sizeof(char) * (ft_strlen(stash) - index));
+	if (!new_stash)
+		return (NULL);
+	index++;
+	while(stash[index])
+	{
+		new_stash[j] = stash[index];
+		index++;
+		j++;
+	}
+	new_stash[j] = '\0';
+	free (stash);
+	return (new_stash);
+}
+int	find_char_str(char *str, char c)
+{
+	int i;
+
+	i = 0;
+	if (str)
+	{		
+		while (str[i])
+		{
+			if (str[i] == c)
+				return (i);
+			i++;
+		}
+	}
+	return (i);
+}
+
+char *return_line(char *stash)
+{
+	int	index_to_stop;
+	char *line;
+	int i;
+
+	if (!stash)
+		return (NULL);
+	index_to_stop = find_char_str(stash, '\n');
+	line = malloc (sizeof(char) * (index_to_stop + 2));
+	if (!line)
+		return (NULL);
+	i = 0;
+	while (stash[i] != '\n' && stash[i] != '\0')
+	{
+		line[i] = stash[i];
+		i++;
+	}
+	if (stash[i] == '\n')
+	{
+		line[i] = '\n';
+		i++;
+	}		
+	line[i] = '\0';
+	return (line);
+}

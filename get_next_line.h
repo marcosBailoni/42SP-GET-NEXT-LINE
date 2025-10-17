@@ -6,7 +6,7 @@
 /*   By: vboxuser <vboxuser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 12:55:12 by maralves          #+#    #+#             */
-/*   Updated: 2025/10/14 23:59:45 by vboxuser         ###   ########.fr       */
+/*   Updated: 2025/10/16 23:56:09 by vboxuser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,11 @@
 # define GET_NEXT_LINE_H
 
 size_t	ft_strlen(const char *str);
-char	*ft_strdup(const char *s);
-char	*ft_strjoin(char *s1, char *s2);
-size_t	ft_strlcpy(char *dst, const char *src, size_t size);
-char	*ft_substr(char const *s, unsigned int start, size_t len);
+char	*ft_strchr(char *full, char c);
+char	*ft_join_stash_buffer(char *stash, char *buffer);
+char	*readjust_stash(char *stash);
+int	find_char_str(char *str, char c);
+char *return_line(char *stash);
 char *get_next_line(int fd);
 
 #endif
