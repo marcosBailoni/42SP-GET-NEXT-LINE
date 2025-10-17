@@ -1,4 +1,3 @@
-
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
@@ -7,7 +6,7 @@
 /*   By: vboxuser <vboxuser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 12:55:02 by maralves          #+#    #+#             */
-/*   Updated: 2025/10/05 13:41:08 by vboxuser         ###   ########.fr       */
+/*   Updated: 2025/10/17 09:51:32 by vboxuser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,9 +43,9 @@ char	*ft_strchr(char *stash, char c)
 
 char	*ft_join_stash_buffer(char *stash, char *buffer)
 {
-	char *new;
-	int i;
-	int j;
+	char	*new;
+	int		i;
+	int		j;
 
 	i = 0;
 	j = 0;
@@ -58,7 +57,6 @@ char	*ft_join_stash_buffer(char *stash, char *buffer)
 	new = malloc (sizeof(char) * (ft_strlen(stash) + ft_strlen(buffer) + 1));
 	if (!new)
 		return (NULL);
-		// talvez tenha que free no stash também. e fazer a validacao do null
 	while (stash[i])
 	{
 		new[i] = stash[i];
@@ -70,14 +68,15 @@ char	*ft_join_stash_buffer(char *stash, char *buffer)
 	free (stash);
 	return (new);
 }
+
 char	*readjust_stash(char *stash)
 {
-	char *new_stash;
-	int index;
-	int j;
+	char	*new_stash;
+	int		index;
+	int		j;
 
 	if (!stash)
-        return NULL;
+		return (NULL);
 	if (!ft_strchr(stash, '\n'))
 	{
 		free(stash);
@@ -89,7 +88,7 @@ char	*readjust_stash(char *stash)
 	if (!new_stash)
 		return (NULL);
 	index++;
-	while(stash[index])
+	while (stash[index])
 	{
 		new_stash[j] = stash[index];
 		index++;
@@ -99,13 +98,14 @@ char	*readjust_stash(char *stash)
 	free (stash);
 	return (new_stash);
 }
+
 int	find_char_str(char *str, char c)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	if (str)
-	{		
+	{
 		while (str[i])
 		{
 			if (str[i] == c)
@@ -116,11 +116,11 @@ int	find_char_str(char *str, char c)
 	return (i);
 }
 
-char *return_line(char *stash)
+char	*return_line(char *stash)
 {
-	int	index_to_stop;
-	char *line;
-	int i;
+	int		index_to_stop;
+	char	*line;
+	int		i;
 
 	if (!stash)
 		return (NULL);
@@ -138,7 +138,7 @@ char *return_line(char *stash)
 	{
 		line[i] = '\n';
 		i++;
-	}		
+	}
 	line[i] = '\0';
 	return (line);
 }
