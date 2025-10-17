@@ -6,7 +6,7 @@
 /*   By: vboxuser <vboxuser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 12:55:02 by maralves          #+#    #+#             */
-/*   Updated: 2025/10/17 09:51:32 by vboxuser         ###   ########.fr       */
+/*   Updated: 2025/10/17 10:10:53 by vboxuser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,36 +69,6 @@ char	*ft_join_stash_buffer(char *stash, char *buffer)
 	return (new);
 }
 
-char	*readjust_stash(char *stash)
-{
-	char	*new_stash;
-	int		index;
-	int		j;
-
-	if (!stash)
-		return (NULL);
-	if (!ft_strchr(stash, '\n'))
-	{
-		free(stash);
-		return (NULL);
-	}
-	index = find_char_str(stash, '\n');
-	j = 0;
-	new_stash = malloc(sizeof(char) * (ft_strlen(stash) - index));
-	if (!new_stash)
-		return (NULL);
-	index++;
-	while (stash[index])
-	{
-		new_stash[j] = stash[index];
-		index++;
-		j++;
-	}
-	new_stash[j] = '\0';
-	free (stash);
-	return (new_stash);
-}
-
 int	find_char_str(char *str, char c)
 {
 	int	i;
@@ -114,31 +84,4 @@ int	find_char_str(char *str, char c)
 		}
 	}
 	return (i);
-}
-
-char	*return_line(char *stash)
-{
-	int		index_to_stop;
-	char	*line;
-	int		i;
-
-	if (!stash)
-		return (NULL);
-	index_to_stop = find_char_str(stash, '\n');
-	line = malloc (sizeof(char) * (index_to_stop + 2));
-	if (!line)
-		return (NULL);
-	i = 0;
-	while (stash[i] != '\n' && stash[i] != '\0')
-	{
-		line[i] = stash[i];
-		i++;
-	}
-	if (stash[i] == '\n')
-	{
-		line[i] = '\n';
-		i++;
-	}
-	line[i] = '\0';
-	return (line);
 }
